@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Created on Mon Nov 27 03:01:23 2017
 
@@ -48,7 +49,7 @@ for r in rc.keys():
 with open('a.csv', 'w') as f:
     st = ',' + ','.join(sorted([l[0] for l in s]))
     f.write(st + '\n')
-    st = ',' + ','.join(sorted([l[1] for l in s]))
+    st = ',' + ','.join([l[1] for l in sorted([l for l in s])])
     f.write(st + '\n')
     for k, v in rc.items():
         st = str(k) + ',' + ','.join(v.values())
