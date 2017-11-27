@@ -37,6 +37,8 @@ s = set()
 for r in result.values():
     for d in r:
         s.add(d[0])
+
+s = sorted(s)
             
 rc = {k:dict(v) for (k,v) in  result.items()}
 for r in rc.keys():
@@ -47,11 +49,10 @@ for r in rc.keys():
             rc[r][p] = str(rc[r][p])
 
 with open('a.csv', 'w') as f:
-    st = ',' + ','.join(sorted([l[0] for l in s]))
+    st = ',' + ','.join(['"' + l[0] + '"' for l in s])
     f.write(st + '\n')
-    st = ',' + ','.join([l[1] for l in sorted([l for l in s])])
+    st = ',' + ','.join(['"' + l[1] + '"' for l in s])
     f.write(st + '\n')
     for k, v in rc.items():
-        st = str(k) + ',' + ','.join(v.values())
+        st = str(k) + ',' + ','.join(['"' + l + '"' for l in v.values()])
         f.write(st + '\n')        
-        
