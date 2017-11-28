@@ -11,20 +11,31 @@ import asyncio
 from aiohttp import ClientSession
 
 async def fetch(name, url, session):
-    async with session.get(url) as response:
-        raw_data =  await response.text()
-        print(name)
-        return name, raw_data
+    retries_count = 0
+    retries = 3
+    while retries_count < retries:
+        try:
+            async with session.get(url) as response:
+                    raw_data =  await response.text()
+        except Exception as err:
+            retries_count += 1
+            message = "Exception {0} during execution of {1}. {2} of {3} retries attempted".format(err, name, retries_count, retries)
+    
+            print(message)
+    
+            await asyncio.sleep(5)
+        else:        
+            print(name)
+            return name, raw_data
     
 async def run(url, units):
     tasks = []
 
-    # Fetch all responses within one Client session,
-    # keep connection alive for all requests.
     async with ClientSession(headers={'User-Agent': 'Mozilla/5.0'}) as session:
         for u in units:
             task = asyncio.ensure_future(fetch(u[0], url.format(u[1]), session))
             tasks.append(task)
+            await asyncio.sleep(0.1)
 
         return await asyncio.gather(*tasks)
 
@@ -38,6 +49,8 @@ units = [((u['UnitName'], u['UnitDesignationCode']), u['UnitCode']) for u in req
 loop = asyncio.get_event_loop()
 future = asyncio.ensure_future(run(base_url, units))
 data = list(loop.run_until_complete(future))
+loop.run_until_complete(asyncio.sleep(0))
+loop.close()
 
 result = {}
 
