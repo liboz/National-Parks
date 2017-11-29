@@ -34,7 +34,7 @@ async def fetch(u, url, session, result):
                 return
             table_data = year.find_parent('table').find_all('tr', recursive=False)[2:-1]
             visitation = [[r.string for r in d.find_all('div')] for d in table_data]
-            visitation = [(int(v[0]), int(v[1].replace(',', ''))) for v in visitation]
+            visitation = [(int(v[0]), v[1].replace(',', '')) for v in visitation]
             for v in visitation:
                 if v[0] in result:
                     result[v[0]][name] = v[1]
@@ -49,7 +49,6 @@ async def run(url, units, result):
         for u in units:
             task = asyncio.ensure_future(fetch(u, url.format(u['UnitCode']), session, result))
             tasks.append(task)
-            await asyncio.sleep(0.1)
 
         return await asyncio.gather(*tasks)
 
@@ -80,7 +79,7 @@ for r in result.keys():
         if p not in result[r]:
             result[r][p] = ''
         else:
-            result[r][p] = str(result[r][p])
+            result[r][p] = result[r][p]
 
 with open('result.csv', 'w') as f:
     st = ',' + ','.join(['"' + l[0] + '"' for l in s])
